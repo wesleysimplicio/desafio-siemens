@@ -3,4 +3,3 @@ dist/
 .angular/
 *.md
 Dockerfile
-nginx.conf
