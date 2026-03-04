@@ -1,0 +1,57 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Livros</h1>
+    <a routerLink="new" class="btn btn-primary">+ Novo Livro</a>
+  </div>
+
+  <div class="alert alert-danger" *ngIf="error$ | async as error">
+    {{ error }}
+    <button class="btn-close" (click)="dismissError()">✕</button>
+  </div>
+
+  <div class="loading" *ngIf="loading$ | async">Carregando...</div>
+
+  <div class="table-wrapper" *ngIf="!(loading$ | async)">
+    <table class="data-table" *ngIf="(books$ | async)?.length; else empty">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Título</th>
+          <th>ISBN</th>
+          <th>Ano</th>
+          <th>Autor</th>
+          <th>Gênero</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let book of books$ | async">
+          <td>{{ book.id }}</td>
+          <td>{{ book.title }}</td>
+          <td>{{ book.isbn }}</td>
+          <td>{{ book.publishedYear }}</td>
+          <td>{{ book.authorName }}</td>
+          <td>{{ book.genreName }}</td>
+          <td class="actions">
+            <a [routerLink]="[book.id, 'edit']" class="btn btn-sm btn-secondary">Editar</a>
+            <button class="btn btn-sm btn-danger" (click)="onDelete(book.id)">Excluir</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #empty>
+      <p class="empty-state">Nenhum livro cadastrado.</p>
+    </ng-template>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="confirmDeleteId !== null">
+  <div class="modal">
+    <h3>Confirmar exclusão</h3>
+    <p>Deseja excluir este livro? Esta ação não pode ser desfeita.</p>
+    <div class="modal-actions">
+      <button class="btn btn-danger" (click)="confirmDelete()">Excluir</button>
+      <button class="btn btn-secondary" (click)="cancelDelete()">Cancelar</button>
+    </div>
+  </div>
+</div>

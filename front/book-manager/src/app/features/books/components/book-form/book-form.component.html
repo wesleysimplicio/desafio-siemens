@@ -1,0 +1,121 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>{{ isEdit ? 'Editar Livro' : 'Novo Livro' }}</h1>
+  </div>
+
+  <div class="alert alert-danger" *ngIf="error$ | async as error">
+    {{ error }}
+  </div>
+
+  <div class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="title">Título *</label>
+        <input
+          id="title"
+          type="text"
+          class="form-control"
+          formControlName="title"
+          [class.is-invalid]="title?.invalid && title?.touched"
+          placeholder="Título do livro"
+        />
+        <div class="invalid-feedback" *ngIf="title?.invalid && title?.touched">
+          <span *ngIf="title?.errors?.['required']">Título é obrigatório.</span>
+          <span *ngIf="title?.errors?.['maxlength']">Máximo 200 caracteres.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="isbn">ISBN *</label>
+        <input
+          id="isbn"
+          type="text"
+          class="form-control"
+          formControlName="isbn"
+          [class.is-invalid]="isbn?.invalid && isbn?.touched"
+          placeholder="Ex: 978-3-16-148410-0"
+        />
+        <div class="invalid-feedback" *ngIf="isbn?.invalid && isbn?.touched">
+          <span *ngIf="isbn?.errors?.['required']">ISBN é obrigatório.</span>
+          <span *ngIf="isbn?.errors?.['maxlength']">Máximo 20 caracteres.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="publishedYear">Ano de publicação *</label>
+        <input
+          id="publishedYear"
+          type="number"
+          class="form-control"
+          formControlName="publishedYear"
+          [class.is-invalid]="publishedYear?.invalid && publishedYear?.touched"
+          placeholder="Ex: 2024"
+        />
+        <div class="invalid-feedback" *ngIf="publishedYear?.invalid && publishedYear?.touched">
+          <span *ngIf="publishedYear?.errors?.['required']">Ano é obrigatório.</span>
+          <span *ngIf="publishedYear?.errors?.['min'] || publishedYear?.errors?.['max']">Informe um ano válido (1000–9999).</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="authorId">Autor *</label>
+        <select
+          id="authorId"
+          class="form-control"
+          formControlName="authorId"
+          [class.is-invalid]="authorId?.invalid && authorId?.touched"
+        >
+          <option [ngValue]="null" disabled>Selecione um autor</option>
+          <option *ngFor="let author of authors$ | async" [ngValue]="author.id">
+            {{ author.name }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="authorId?.invalid && authorId?.touched">
+          Autor é obrigatório.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="genreId">Gênero *</label>
+        <select
+          id="genreId"
+          class="form-control"
+          formControlName="genreId"
+          [class.is-invalid]="genreId?.invalid && genreId?.touched"
+        >
+          <option [ngValue]="null" disabled>Selecione um gênero</option>
+          <option *ngFor="let genre of genres$ | async" [ngValue]="genre.id">
+            {{ genre.name }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="genreId?.invalid && genreId?.touched">
+          Gênero é obrigatório.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Descrição</label>
+        <textarea
+          id="description"
+          class="form-control"
+          formControlName="description"
+          rows="4"
+          [class.is-invalid]="description?.invalid && description?.touched"
+          placeholder="Descrição opcional do livro"
+        ></textarea>
+        <div class="invalid-feedback" *ngIf="description?.invalid && description?.touched">
+          <span *ngIf="description?.errors?.['maxlength']">Máximo 1000 caracteres.</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="loading$ | async">
+          {{ (loading$ | async) ? 'Salvando...' : (isEdit ? 'Atualizar' : 'Cadastrar') }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancelar</button>
+      </div>
+
+    </form>
+  </div>
+</div>
