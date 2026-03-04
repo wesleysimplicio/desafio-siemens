@@ -16,7 +16,40 @@ Sistema de gerenciamento de livros desenvolvido como desafio técnico. Permite o
 
 ---
 
-## Pré-requisitos
+## Executar com Docker (recomendado)
+
+A forma mais simples de rodar tudo junto: banco de dados, API e frontend.
+
+### Pré-requisito
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) ou Docker + Docker Compose v2
+
+### Subir o ambiente
+
+```bash
+docker compose up --build
+```
+
+Aguarde o build e a inicialização. As migrations são aplicadas automaticamente.
+
+| Serviço     | URL                                    |
+|-------------|----------------------------------------|
+| Frontend    | http://localhost                       |
+| API (REST)  | http://localhost/api/v1                |
+| API Docs    | http://localhost/scalar/v1             |
+| API direta  | http://localhost:5000/api/v1           |
+| PostgreSQL  | localhost:5432                         |
+
+### Parar e remover containers
+
+```bash
+docker compose down          # para e remove containers
+docker compose down -v       # também remove o volume do banco de dados
+```
+
+---
+
+
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 - [Node.js 18+](https://nodejs.org/)

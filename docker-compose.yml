@@ -1,0 +1,58 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: bookmanager-db
+    environment:
+      POSTGRES_DB: bookmanager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bookmanager"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - bookmanager-net
+
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: bookmanager-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=bookmanager;Username=postgres;Password=postgres"
+      Cors__AllowedOrigins__0: "http://localhost"
+    ports:
+      - "5000:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - bookmanager-net
+    restart: on-failure
+
+  frontend:
+    build:
+      context: ./front/book-manager
+      dockerfile: Dockerfile
+    container_name: bookmanager-front
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - bookmanager-net
+
+volumes:
+  pgdata:
+
+networks:
+  bookmanager-net:
+    driver: bridge
