@@ -1,0 +1,52 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>{{ isEditMode ? 'Editar Autor' : 'Novo Autor' }}</h1>
+    <a routerLink="/authors" class="btn btn-secondary">← Voltar</a>
+  </div>
+
+  <div class="alert alert-danger" *ngIf="error$ | async as error">
+    {{ error }}
+    <button class="btn-close" (click)="dismissError()">✕</button>
+  </div>
+
+  <div class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Nome *</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          class="form-control"
+          [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+          placeholder="Nome completo do autor"
+        />
+        <div class="invalid-feedback" *ngIf="form.get('name')?.hasError('required') && form.get('name')?.touched">
+          Nome é obrigatório.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Biografia</label>
+        <textarea
+          id="bio"
+          formControlName="bio"
+          class="form-control"
+          rows="4"
+          placeholder="Breve biografia do autor (opcional)"
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="form.invalid || (loading$ | async)"
+        >
+          {{ (loading$ | async) ? 'Salvando...' : (isEditMode ? 'Atualizar' : 'Criar') }}
+        </button>
+        <a routerLink="/authors" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
