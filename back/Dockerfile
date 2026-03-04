@@ -2,21 +2,21 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copy solution and project files first (layer cache for restore)
-COPY BookManager.slnx ./
-COPY BookManager.Domain/BookManager.Domain.csproj           BookManager.Domain/
-COPY BookManager.Infrastructure/BookManager.Infrastructure.csproj  BookManager.Infrastructure/
-COPY BookManager.API/BookManager.API.csproj                 BookManager.API/
-COPY BookManager.Tests/BookManager.Tests.csproj             BookManager.Tests/
-
-RUN dotnet restore BookManager.API/BookManager.API.csproj
-
 # Copy all source code
 COPY . .
 
+# Remove Windows build artifacts.
+# IMPORTANT: macOS/Windows may create "bin\Debug" (with literal backslash) which
+# is a single directory name on Linux that breaks MSBuild glob expansion.
+RUN find . -depth -mindepth 1 | while IFS= read -r f; do \
+      case "$f" in *\\*) rm -rf "$f";; esac; \
+    done 2>/dev/null || true && \
+    find . -name "bin"  -type d -exec rm -rf {} + 2>/dev/null || true && \
+    find . -name "obj"  -type d -exec rm -rf {} + 2>/dev/null || true
+
+# Restore and publish
 RUN dotnet publish BookManager.API/BookManager.API.csproj \
     -c Release \
-    --no-restore \
     -o /app/publish
 
 # ── Stage 2: Runtime ─────────────────────────────────────────────────────────

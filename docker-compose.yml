@@ -30,7 +30,7 @@ services:
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=bookmanager;Username=postgres;Password=postgres"
       Cors__AllowedOrigins__0: "http://localhost"
     ports:
-      - "5000:8080"
+      - "5001:8080"
     depends_on:
       db:
         condition: service_healthy
