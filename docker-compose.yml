@@ -29,6 +29,7 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=bookmanager;Username=postgres;Password=postgres"
       Cors__AllowedOrigins__0: "http://localhost"
+      Cors__AllowedOrigins__1: "http://localhost:4200"
     ports:
       - "5001:8080"
     depends_on:

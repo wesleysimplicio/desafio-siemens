@@ -37,7 +37,7 @@ Aguarde o build e a inicialização. As migrations são aplicadas automaticament
 | Frontend    | http://localhost                       |
 | API (REST)  | http://localhost/api/v1                |
 | API Docs    | http://localhost/scalar/v1             |
-| API direta  | http://localhost:5000/api/v1           |
+| API direta  | http://localhost:5001/api/v1           |
 | PostgreSQL  | localhost:5432                         |
 
 ### Parar e remover containers
@@ -105,8 +105,8 @@ cd back
 dotnet run --project BookManager.API
 ```
 
-A API ficará disponível em `http://localhost:5000`.  
-Documentação interativa: **http://localhost:5000/scalar/v1**
+A API ficará disponível em `http://localhost:5001`.  
+Documentação interativa: **http://localhost:5001/scalar/v1**
 
 ---
 
@@ -127,7 +127,7 @@ ng serve
 
 A aplicação ficará disponível em **http://localhost:4200**.
 
-> O proxy para a API está configurado via `environment.ts` (`http://localhost:5000/api/v1`).
+> O proxy para a API está configurado via `environment.ts` (`http://localhost:5001/api/v1`).
 
 ---
 
