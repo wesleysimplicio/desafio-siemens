@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { Genre } from '../../../../core/models/genre.model';
 import { loadGenres, deleteGenre, clearGenreError } from '../../store/genre.actions';
-import { selectAllGenres, selectGenreLoading, selectGenreError, selectGenreLoaded } from '../../store/genre.selectors';
+import { selectAllGenres, selectGenreLoading, selectGenreError } from '../../store/genre.selectors';
 
 @Component({
   standalone: false,
   selector: 'app-genre-list',
   templateUrl: './genre-list.component.html',
-  styleUrls: ['./genre-list.component.scss']
+  styleUrls: ['./genre-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GenreListComponent implements OnInit, OnDestroy {
   genres$: Observable<Genre[]>;
@@ -26,9 +26,7 @@ export class GenreListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.select(selectGenreLoaded).pipe(take(1)).subscribe(loaded => {
-      if (!loaded) this.store.dispatch(loadGenres());
-    });
+    this.store.dispatch(loadGenres());
   }
 
   onDelete(id: number): void {
@@ -48,6 +46,10 @@ export class GenreListComponent implements OnInit, OnDestroy {
 
   dismissError(): void {
     this.store.dispatch(clearGenreError());
+  }
+
+  trackById(index: number, item: Genre): number {
+    return item.id;
   }
 
   ngOnDestroy(): void {

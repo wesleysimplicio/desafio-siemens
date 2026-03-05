@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { Author } from '../../../../core/models/author.model';
 import { loadAuthors, deleteAuthor, clearAuthorError } from '../../store/author.actions';
-import { selectAllAuthors, selectAuthorLoading, selectAuthorError, selectAuthorLoaded } from '../../store/author.selectors';
+import { selectAllAuthors, selectAuthorLoading, selectAuthorError } from '../../store/author.selectors';
 
 @Component({
   standalone: false,
   selector: 'app-author-list',
   templateUrl: './author-list.component.html',
-  styleUrls: ['./author-list.component.scss']
+  styleUrls: ['./author-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthorListComponent implements OnInit, OnDestroy {
   authors$: Observable<Author[]>;
@@ -25,9 +25,7 @@ export class AuthorListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.select(selectAuthorLoaded).pipe(take(1)).subscribe(loaded => {
-      if (!loaded) this.store.dispatch(loadAuthors());
-    });
+    this.store.dispatch(loadAuthors());
   }
 
   onDelete(id: number): void {
@@ -47,6 +45,10 @@ export class AuthorListComponent implements OnInit, OnDestroy {
 
   dismissError(): void {
     this.store.dispatch(clearAuthorError());
+  }
+
+  trackById(index: number, item: Author): number {
+    return item.id;
   }
 
   ngOnDestroy(): void {

@@ -9,23 +9,26 @@
     <button class="btn-close" (click)="dismissError()">✕</button>
   </div>
 
-  <div class="loading" *ngIf="loading$ | async">Carregando...</div>
+  <ng-container *ngIf="loading$ | async as isLoading; else content">
+    <div class="loading">Carregando...</div>
+  </ng-container>
 
-  <div class="table-wrapper" *ngIf="!(loading$ | async)">
-    <table class="data-table" *ngIf="(books$ | async)?.length; else empty">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Título</th>
-          <th>ISBN</th>
-          <th>Ano</th>
-          <th>Autor</th>
-          <th>Gênero</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let book of books$ | async">
+  <ng-template #content>
+    <div class="table-wrapper">
+      <table class="data-table" *ngIf="(books$ | async) as books; else empty">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Título</th>
+            <th>ISBN</th>
+            <th>Ano</th>
+            <th>Autor</th>
+            <th>Gênero</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="books.length; else empty">
+          <tr *ngFor="let book of books; trackBy: trackById">
           <td>{{ book.id }}</td>
           <td>{{ book.title }}</td>
           <td>{{ book.isbn }}</td>
@@ -42,7 +45,8 @@
     <ng-template #empty>
       <p class="empty-state">Nenhum livro cadastrado.</p>
     </ng-template>
-  </div>
+    </div>
+  </ng-template>
 </div>
 
 <div class="modal-overlay" *ngIf="confirmDeleteId !== null">

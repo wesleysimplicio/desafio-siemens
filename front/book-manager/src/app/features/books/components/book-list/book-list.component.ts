@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { Book } from '../../../../core/models/book.model';
 import { loadBooks, deleteBook, clearBookError } from '../../store/book.actions';
-import { selectAllBooks, selectBookLoading, selectBookError, selectBookLoaded } from '../../store/book.selectors';
+import { selectAllBooks, selectBookLoading, selectBookError } from '../../store/book.selectors';
 
 @Component({
   standalone: false,
   selector: 'app-book-list',
   templateUrl: './book-list.component.html',
-  styleUrls: ['./book-list.component.scss']
+  styleUrls: ['./book-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BookListComponent implements OnInit, OnDestroy {
   books$: Observable<Book[]>;
@@ -25,9 +25,7 @@ export class BookListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.select(selectBookLoaded).pipe(take(1)).subscribe(loaded => {
-      if (!loaded) this.store.dispatch(loadBooks());
-    });
+    this.store.dispatch(loadBooks());
   }
 
   onDelete(id: number): void {
@@ -47,6 +45,10 @@ export class BookListComponent implements OnInit, OnDestroy {
 
   dismissError(): void {
     this.store.dispatch(clearBookError());
+  }
+
+  trackById(index: number, item: Book): number {
+    return item.id;
   }
 
   ngOnDestroy(): void {

@@ -21,7 +21,7 @@ public class AuthorRepository : IAuthorRepository
         => await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
 
     public async Task<Author?> GetByNameAsync(string name)
-        => await _context.Authors.AsNoTracking().FirstOrDefaultAsync(a => a.Name.ToLower() == name.ToLower());
+        => await _context.Authors.AsNoTracking().FirstOrDefaultAsync(a => EF.Functions.ILike(a.Name, name));
 
     public async Task<Author> AddAsync(Author author)
     {

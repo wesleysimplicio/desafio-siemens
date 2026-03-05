@@ -20,7 +20,7 @@ export const initialState: BookState = adapter.getInitialState({
 export const bookReducer = createReducer(
   initialState,
 
-  on(BookActions.loadBooks, state => ({ ...state, loading: true, error: null })),
+  on(BookActions.loadBooks, state => ({ ...state, loading: !state.loaded, error: null })),
   on(BookActions.loadBooksSuccess, (state, { books }) =>
     adapter.setAll(books, { ...state, loading: false, loaded: true })),
   on(BookActions.loadBooksFailure, (state, { error }) =>
@@ -28,19 +28,19 @@ export const bookReducer = createReducer(
 
   on(BookActions.createBook, state => ({ ...state, loading: true, error: null })),
   on(BookActions.createBookSuccess, (state, { book }) =>
-    adapter.addOne(book, { ...state, loading: false })),
+    adapter.addOne(book, { ...state, loading: false, loaded: false })),
   on(BookActions.createBookFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 
   on(BookActions.updateBook, state => ({ ...state, loading: true, error: null })),
   on(BookActions.updateBookSuccess, (state, { book }) =>
-    adapter.upsertOne(book, { ...state, loading: false })),
+    adapter.upsertOne(book, { ...state, loading: false, loaded: false })),
   on(BookActions.updateBookFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 
   on(BookActions.deleteBook, state => ({ ...state, loading: true, error: null })),
   on(BookActions.deleteBookSuccess, (state, { id }) =>
-    adapter.removeOne(id, { ...state, loading: false })),
+    adapter.removeOne(id, { ...state, loading: false, loaded: false })),
   on(BookActions.deleteBookFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 

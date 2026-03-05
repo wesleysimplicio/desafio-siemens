@@ -31,7 +31,7 @@ public class BookRepository : IBookRepository
     public async Task<Book?> GetByISBNAsync(string isbn)
         => await _context.Books
             .AsNoTracking()
-            .FirstOrDefaultAsync(b => b.ISBN.ToLower() == isbn.ToLower());
+            .FirstOrDefaultAsync(b => EF.Functions.ILike(b.ISBN, isbn));
 
     public async Task<IEnumerable<Book>> GetByAuthorIdAsync(int authorId)
         => await _context.Books

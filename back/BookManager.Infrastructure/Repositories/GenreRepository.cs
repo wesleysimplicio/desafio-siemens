@@ -21,7 +21,7 @@ public class GenreRepository : IGenreRepository
         => await _context.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
     public async Task<Genre?> GetByNameAsync(string name)
-        => await _context.Genres.AsNoTracking().FirstOrDefaultAsync(g => g.Name.ToLower() == name.ToLower());
+        => await _context.Genres.AsNoTracking().FirstOrDefaultAsync(g => EF.Functions.ILike(g.Name, name));
 
     public async Task<Genre> AddAsync(Genre genre)
     {

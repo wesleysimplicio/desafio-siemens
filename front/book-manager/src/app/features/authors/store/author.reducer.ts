@@ -20,7 +20,7 @@ export const initialState: AuthorState = adapter.getInitialState({
 export const authorReducer = createReducer(
   initialState,
 
-  on(AuthorActions.loadAuthors, state => ({ ...state, loading: true, error: null })),
+  on(AuthorActions.loadAuthors, state => ({ ...state, loading: !state.loaded, error: null })),
   on(AuthorActions.loadAuthorsSuccess, (state, { authors }) =>
     adapter.setAll(authors, { ...state, loading: false, loaded: true })),
   on(AuthorActions.loadAuthorsFailure, (state, { error }) =>
@@ -28,19 +28,19 @@ export const authorReducer = createReducer(
 
   on(AuthorActions.createAuthor, state => ({ ...state, loading: true, error: null })),
   on(AuthorActions.createAuthorSuccess, (state, { author }) =>
-    adapter.addOne(author, { ...state, loading: false })),
+    adapter.addOne(author, { ...state, loading: false, loaded: false })),
   on(AuthorActions.createAuthorFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 
   on(AuthorActions.updateAuthor, state => ({ ...state, loading: true, error: null })),
   on(AuthorActions.updateAuthorSuccess, (state, { author }) =>
-    adapter.upsertOne(author, { ...state, loading: false })),
+    adapter.upsertOne(author, { ...state, loading: false, loaded: false })),
   on(AuthorActions.updateAuthorFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 
   on(AuthorActions.deleteAuthor, state => ({ ...state, loading: true, error: null })),
   on(AuthorActions.deleteAuthorSuccess, (state, { id }) =>
-    adapter.removeOne(id, { ...state, loading: false })),
+    adapter.removeOne(id, { ...state, loading: false, loaded: false })),
   on(AuthorActions.deleteAuthorFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 

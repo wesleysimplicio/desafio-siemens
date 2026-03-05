@@ -68,10 +68,10 @@ public class BookService : IBookService
         try
         {
             _logger.LogInformation("Creating book '{Title}' (ISBN: {ISBN}).", dto.Title, dto.ISBN);
-            _ = await _authorRepository.GetByIdAsync(dto.AuthorId)
+            var author = await _authorRepository.GetByIdAsync(dto.AuthorId)
                 ?? throw new NotFoundException(nameof(Author), dto.AuthorId);
 
-            _ = await _genreRepository.GetByIdAsync(dto.GenreId)
+            var genre = await _genreRepository.GetByIdAsync(dto.GenreId)
                 ?? throw new NotFoundException(nameof(Genre), dto.GenreId);
 
             var existing = await _repository.GetByISBNAsync(dto.ISBN);
@@ -81,11 +81,8 @@ public class BookService : IBookService
             var book = new Book(dto.Title, dto.ISBN, dto.PublishedYear, dto.AuthorId, dto.GenreId, dto.Description);
             await _repository.AddAsync(book);
 
-            var created = await _repository.GetByIdAsync(book.Id)
-                ?? throw new NotFoundException(nameof(Book), book.Id);
-
-            _logger.LogInformation("Book '{Title}' created with ID {Id}.", created.Title, created.Id);
-            return ToViewModel(created);
+            _logger.LogInformation("Book '{Title}' created with ID {Id}.", book.Title, book.Id);
+            return ToViewModel(book, author.Name, genre.Name);
         }
         catch (NotFoundException)
         {
@@ -112,10 +109,10 @@ public class BookService : IBookService
             var book = await _repository.GetByIdAsync(id)
                 ?? throw new NotFoundException(nameof(Book), id);
 
-            _ = await _authorRepository.GetByIdAsync(dto.AuthorId)
+            var author = await _authorRepository.GetByIdAsync(dto.AuthorId)
                 ?? throw new NotFoundException(nameof(Author), dto.AuthorId);
 
-            _ = await _genreRepository.GetByIdAsync(dto.GenreId)
+            var genre = await _genreRepository.GetByIdAsync(dto.GenreId)
                 ?? throw new NotFoundException(nameof(Genre), dto.GenreId);
 
             var existing = await _repository.GetByISBNAsync(dto.ISBN);
@@ -125,11 +122,8 @@ public class BookService : IBookService
             book.Update(dto.Title, dto.ISBN, dto.PublishedYear, dto.AuthorId, dto.GenreId, dto.Description);
             await _repository.UpdateAsync(book);
 
-            var updated = await _repository.GetByIdAsync(id)
-                ?? throw new NotFoundException(nameof(Book), id);
-
             _logger.LogInformation("Book ID {Id} updated successfully.", id);
-            return ToViewModel(updated);
+            return ToViewModel(book, author.Name, genre.Name);
         }
         catch (NotFoundException)
         {
@@ -182,5 +176,18 @@ public class BookService : IBookService
             book.Author.Name,
             book.GenreId,
             book.Genre.Name
+        );
+
+    private static BookViewModel ToViewModel(Book book, string authorName, string genreName)
+        => new(
+            book.Id,
+            book.Title,
+            book.ISBN,
+            book.PublishedYear,
+            book.Description,
+            book.AuthorId,
+            authorName,
+            book.GenreId,
+            genreName
         );
 }

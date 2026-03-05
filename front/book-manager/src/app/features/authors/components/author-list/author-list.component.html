@@ -9,20 +9,23 @@
     <button class="btn-close" (click)="dismissError()">✕</button>
   </div>
 
-  <div class="loading" *ngIf="loading$ | async">Carregando...</div>
+  <ng-container *ngIf="loading$ | async as isLoading; else content">
+    <div class="loading">Carregando...</div>
+  </ng-container>
 
-  <div class="table-wrapper" *ngIf="!(loading$ | async)">
-    <table class="data-table" *ngIf="(authors$ | async)?.length; else empty">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nome</th>
-          <th>Biografia</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let author of authors$ | async">
+  <ng-template #content>
+    <div class="table-wrapper">
+      <table class="data-table" *ngIf="(authors$ | async) as authors; else empty">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Biografia</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="authors.length; else empty">
+          <tr *ngFor="let author of authors; trackBy: trackById">
           <td>{{ author.id }}</td>
           <td>{{ author.name }}</td>
           <td>{{ author.bio || '—' }}</td>
@@ -36,7 +39,8 @@
     <ng-template #empty>
       <p class="empty-state">Nenhum autor cadastrado.</p>
     </ng-template>
-  </div>
+    </div>
+  </ng-template>
 </div>
 
 <div class="modal-overlay" *ngIf="confirmDeleteId !== null">

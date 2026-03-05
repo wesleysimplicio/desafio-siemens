@@ -5,6 +5,7 @@ using BookManager.API.Services;
 using BookManager.Domain.Interfaces;
 using BookManager.Infrastructure.Data;
 using BookManager.Infrastructure.Repositories;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -69,6 +70,14 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
+// ── Response Compression ──────────────────────────────────────────────────────
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
 var app = builder.Build();
 
 // ── Auto-migration ────────────────────────────────────────────────────────────
@@ -92,6 +101,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
 app.UseCors("AllowFrontend");
 app.MapControllers();
 

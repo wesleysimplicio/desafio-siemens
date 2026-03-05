@@ -23,6 +23,7 @@ services:
     build:
       context: ./back
       dockerfile: Dockerfile
+    image: bookmanager-api:latest
     container_name: bookmanager-api
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -43,6 +44,7 @@ services:
     build:
       context: ./front/book-manager
       dockerfile: Dockerfile
+    image: bookmanager-front:latest
     container_name: bookmanager-front
     ports:
       - "80:80"
@@ -50,6 +52,7 @@ services:
       - backend
     networks:
       - bookmanager-net
+    restart: unless-stopped
 
 volumes:
   pgdata:
