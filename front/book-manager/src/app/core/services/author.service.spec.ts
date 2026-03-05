@@ -74,12 +74,11 @@ describe('AuthorService', () => {
   });
 
   it('delete() should DELETE the author', () => {
-    const response: ApiResponse<void> = { success: true, data: undefined };
-    service.delete(1).subscribe(result => {
-      expect(result).toBeUndefined();
-    });
+    let completed = false;
+    service.delete(1).subscribe({ complete: () => (completed = true) });
     const req = httpMock.expectOne(r => r.url.endsWith('/authors/1'));
     expect(req.request.method).toBe('DELETE');
-    req.flush(response);
+    req.flush(null, { status: 204, statusText: 'No Content' });
+    expect(completed).toBeTrue();
   });
 });
