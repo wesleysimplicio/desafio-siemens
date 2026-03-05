@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Genre } from '../../../../core/models/genre.model';
 import { loadGenres, deleteGenre, clearGenreError } from '../../store/genre.actions';
-import { selectAllGenres, selectGenreLoading, selectGenreError } from '../../store/genre.selectors';
+import { selectAllGenres, selectGenreLoading, selectGenreError, selectGenreLoaded } from '../../store/genre.selectors';
 
 @Component({
   standalone: false,
@@ -25,7 +26,9 @@ export class GenreListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadGenres());
+    this.store.select(selectGenreLoaded).pipe(take(1)).subscribe(loaded => {
+      if (!loaded) this.store.dispatch(loadGenres());
+    });
   }
 
   onDelete(id: number): void {

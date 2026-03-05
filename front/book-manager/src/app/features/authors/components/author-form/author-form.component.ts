@@ -10,7 +10,7 @@ import {
   updateAuthor, updateAuthorSuccess, updateAuthorFailure,
   loadAuthors, clearAuthorError
 } from '../../store/author.actions';
-import { selectAllAuthors, selectAuthorError, selectAuthorLoading } from '../../store/author.selectors';
+import { selectAllAuthors, selectAuthorError, selectAuthorLoading, selectAuthorLoaded } from '../../store/author.selectors';
 
 @Component({
   standalone: false,
@@ -48,7 +48,9 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
     this.isEditMode = this.authorId !== null;
 
     if (this.isEditMode) {
-      this.store.dispatch(loadAuthors());
+      this.store.select(selectAuthorLoaded).pipe(take(1)).subscribe(loaded => {
+        if (!loaded) this.store.dispatch(loadAuthors());
+      });
       this.store.select(selectAllAuthors)
         .pipe(takeUntil(this.destroy$))
         .subscribe(authors => {

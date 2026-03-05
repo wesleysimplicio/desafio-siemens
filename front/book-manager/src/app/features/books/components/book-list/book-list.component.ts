@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Book } from '../../../../core/models/book.model';
 import { loadBooks, deleteBook, clearBookError } from '../../store/book.actions';
-import { selectAllBooks, selectBookLoading, selectBookError } from '../../store/book.selectors';
+import { selectAllBooks, selectBookLoading, selectBookError, selectBookLoaded } from '../../store/book.selectors';
 
 @Component({
   standalone: false,
@@ -24,7 +25,9 @@ export class BookListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadBooks());
+    this.store.select(selectBookLoaded).pipe(take(1)).subscribe(loaded => {
+      if (!loaded) this.store.dispatch(loadBooks());
+    });
   }
 
   onDelete(id: number): void {

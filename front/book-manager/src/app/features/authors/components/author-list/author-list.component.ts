@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Author } from '../../../../core/models/author.model';
 import { loadAuthors, deleteAuthor, clearAuthorError } from '../../store/author.actions';
-import { selectAllAuthors, selectAuthorLoading, selectAuthorError } from '../../store/author.selectors';
+import { selectAllAuthors, selectAuthorLoading, selectAuthorError, selectAuthorLoaded } from '../../store/author.selectors';
 
 @Component({
   standalone: false,
@@ -24,7 +25,9 @@ export class AuthorListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadAuthors());
+    this.store.select(selectAuthorLoaded).pipe(take(1)).subscribe(loaded => {
+      if (!loaded) this.store.dispatch(loadAuthors());
+    });
   }
 
   onDelete(id: number): void {

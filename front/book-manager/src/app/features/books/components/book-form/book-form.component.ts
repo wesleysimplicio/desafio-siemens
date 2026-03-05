@@ -18,9 +18,9 @@ import {
   loadBooks
 } from '../../store/book.actions';
 
-import { selectAllGenres } from '../../../genres/store/genre.selectors';
-import { selectAllAuthors } from '../../../authors/store/author.selectors';
-import { selectBookById, selectBookLoading, selectBookError } from '../../store/book.selectors';
+import { selectAllGenres, selectGenreLoaded } from '../../../genres/store/genre.selectors';
+import { selectAllAuthors, selectAuthorLoaded } from '../../../authors/store/author.selectors';
+import { selectBookById, selectBookLoading, selectBookError, selectBookLoaded } from '../../store/book.selectors';
 
 @Component({
   standalone: false,
@@ -54,8 +54,12 @@ export class BookFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadGenres());
-    this.store.dispatch(loadAuthors());
+    this.store.select(selectGenreLoaded).pipe(take(1)).subscribe(loaded => {
+      if (!loaded) this.store.dispatch(loadGenres());
+    });
+    this.store.select(selectAuthorLoaded).pipe(take(1)).subscribe(loaded => {
+      if (!loaded) this.store.dispatch(loadAuthors());
+    });
 
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(200)]],
@@ -70,7 +74,9 @@ export class BookFormComponent implements OnInit, OnDestroy {
     if (idParam) {
       this.isEdit = true;
       this.bookId = +idParam;
-      this.store.dispatch(loadBooks());
+      this.store.select(selectBookLoaded).pipe(take(1)).subscribe(loaded => {
+        if (!loaded) this.store.dispatch(loadBooks());
+      });
       this.store.select(selectBookById(this.bookId))
         .pipe(
           filter((book): book is Book => !!book),

@@ -10,7 +10,7 @@ import {
   updateGenre, updateGenreSuccess, updateGenreFailure,
   loadGenres, clearGenreError
 } from '../../store/genre.actions';
-import { selectAllGenres, selectGenreError, selectGenreLoading } from '../../store/genre.selectors';
+import { selectAllGenres, selectGenreError, selectGenreLoading, selectGenreLoaded } from '../../store/genre.selectors';
 
 @Component({
   standalone: false,
@@ -47,7 +47,9 @@ export class GenreFormComponent implements OnInit, OnDestroy {
     this.isEditMode = this.genreId !== null;
 
     if (this.isEditMode) {
-      this.store.dispatch(loadGenres());
+      this.store.select(selectGenreLoaded).pipe(take(1)).subscribe(loaded => {
+        if (!loaded) this.store.dispatch(loadGenres());
+      });
       this.store.select(selectAllGenres)
         .pipe(takeUntil(this.destroy$))
         .subscribe(genres => {
