@@ -4,6 +4,7 @@ using BookManager.Domain.Entities;
 using BookManager.Domain.Exceptions;
 using BookManager.Domain.Interfaces;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace BookManager.Tests.Services;
@@ -16,7 +17,8 @@ public class GenreServiceTests
     public GenreServiceTests()
     {
         _repositoryMock = new Mock<IGenreRepository>();
-        _service = new GenreService(_repositoryMock.Object);
+        var loggerMock = new Mock<ILogger<GenreService>>();
+        _service = new GenreService(_repositoryMock.Object, loggerMock.Object);
     }
 
     [Fact]

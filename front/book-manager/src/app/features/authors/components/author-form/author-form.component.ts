@@ -1,10 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
-import { createAuthor, updateAuthor, loadAuthors, clearAuthorError } from '../../store/author.actions';
+import { Observable, Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
+import {
+  createAuthor, createAuthorSuccess, createAuthorFailure,
+  updateAuthor, updateAuthorSuccess, updateAuthorFailure,
+  loadAuthors, clearAuthorError
+} from '../../store/author.actions';
 import { selectAllAuthors, selectAuthorError, selectAuthorLoading } from '../../store/author.selectors';
 
 @Component({
@@ -17,15 +22,16 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
   form: FormGroup;
   isEditMode = false;
   authorId: number | null = null;
-  error$!: import('rxjs').Observable<string | null>;
-  loading$!: import('rxjs').Observable<boolean>;
+  error$!: Observable<string | null>;
+  loading$!: Observable<boolean>;
   private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private store: Store,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private actions$: Actions
   ) {
     this.error$ = this.store.select(selectAuthorError);
     this.loading$ = this.store.select(selectAuthorLoading);
@@ -68,13 +74,14 @@ export class AuthorFormComponent implements OnInit, OnDestroy {
       this.store.dispatch(createAuthor({ payload }));
     }
 
-    this.loading$.pipe(
-      takeUntil(this.destroy$),
-      filter(loading => !loading)
-    ).subscribe(() => {
-      this.error$.pipe(takeUntil(this.destroy$)).subscribe(error => {
-        if (!error) this.router.navigate(['/authors']);
-      });
+    this.actions$.pipe(
+      ofType(createAuthorSuccess, updateAuthorSuccess, createAuthorFailure, updateAuthorFailure),
+      take(1),
+      takeUntil(this.destroy$)
+    ).subscribe(action => {
+      if (action.type === createAuthorSuccess.type || action.type === updateAuthorSuccess.type) {
+        this.router.navigate(['/authors']);
+      }
     });
   }
 

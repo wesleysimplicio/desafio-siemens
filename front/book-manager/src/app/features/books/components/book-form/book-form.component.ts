@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 
 import { Genre } from '../../../../core/models/genre.model';
 import { Author } from '../../../../core/models/author.model';
@@ -11,7 +12,11 @@ import { Book } from '../../../../core/models/book.model';
 
 import { loadGenres } from '../../../genres/store/genre.actions';
 import { loadAuthors } from '../../../authors/store/author.actions';
-import { createBook, updateBook, loadBooks } from '../../store/book.actions';
+import {
+  createBook, createBookSuccess, createBookFailure,
+  updateBook, updateBookSuccess, updateBookFailure,
+  loadBooks
+} from '../../store/book.actions';
 
 import { selectAllGenres } from '../../../genres/store/genre.selectors';
 import { selectAllAuthors } from '../../../authors/store/author.selectors';
@@ -39,7 +44,8 @@ export class BookFormComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private store: Store
+    private store: Store,
+    private actions$: Actions
   ) {
     this.genres$ = this.store.select(selectAllGenres);
     this.authors$ = this.store.select(selectAllAuthors);
@@ -102,17 +108,15 @@ export class BookFormComponent implements OnInit, OnDestroy {
     } else {
       this.store.dispatch(createBook({ payload: value }));
     }
-    this.loading$
-      .pipe(
-        filter(loading => !loading),
-        take(1),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        this.error$.pipe(take(1)).subscribe(err => {
-          if (!err) this.router.navigate(['/books']);
-        });
-      });
+    this.actions$.pipe(
+      ofType(createBookSuccess, updateBookSuccess, createBookFailure, updateBookFailure),
+      take(1),
+      takeUntil(this.destroy$)
+    ).subscribe(action => {
+      if (action.type === createBookSuccess.type || action.type === updateBookSuccess.type) {
+        this.router.navigate(['/books']);
+      }
+    });
   }
 
   onCancel(): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Genre } from '../../../../core/models/genre.model';
@@ -11,7 +11,7 @@ import { selectAllGenres, selectGenreLoading, selectGenreError } from '../../sto
   templateUrl: './genre-list.component.html',
   styleUrls: ['./genre-list.component.scss']
 })
-export class GenreListComponent implements OnInit {
+export class GenreListComponent implements OnInit, OnDestroy {
   genres$: Observable<Genre[]>;
   loading$: Observable<boolean>;
   error$: Observable<string | null>;

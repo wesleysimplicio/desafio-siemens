@@ -4,6 +4,7 @@ using BookManager.Domain.Entities;
 using BookManager.Domain.Exceptions;
 using BookManager.Domain.Interfaces;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace BookManager.Tests.Services;
@@ -20,7 +21,8 @@ public class BookServiceTests
         _bookRepoMock = new Mock<IBookRepository>();
         _authorRepoMock = new Mock<IAuthorRepository>();
         _genreRepoMock = new Mock<IGenreRepository>();
-        _service = new BookService(_bookRepoMock.Object, _authorRepoMock.Object, _genreRepoMock.Object);
+        var loggerMock = new Mock<ILogger<BookService>>();
+        _service = new BookService(_bookRepoMock.Object, _authorRepoMock.Object, _genreRepoMock.Object, loggerMock.Object);
     }
 
     private static Book CreateBookWithNavigation(

@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using BookManager.API.Common;
 using BookManager.API.DTOs;
-using BookManager.API.Services;
+using BookManager.API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookManager.API.Controllers;

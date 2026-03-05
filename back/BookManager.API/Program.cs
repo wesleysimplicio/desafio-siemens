@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using BookManager.API.Interfaces;
 using BookManager.API.Middleware;
 using BookManager.API.Services;
 using BookManager.Domain.Interfaces;
