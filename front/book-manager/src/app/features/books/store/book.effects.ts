@@ -1,19 +1,24 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError } from 'rxjs/operators';
+import { map, mergeMap, exhaustMap, catchError, withLatestFrom, filter } from 'rxjs/operators';
 import { BookService } from '../../../core/services/book.service';
 import * as BookActions from './book.actions';
+import { selectBookLoaded } from './book.selectors';
 
 @Injectable()
 export class BookEffects {
   private actions$ = inject(Actions);
   private bookService = inject(BookService);
+  private store = inject(Store);
 
   loadBooks$ = createEffect(() =>
     this.actions$.pipe(
       ofType(BookActions.loadBooks),
-      mergeMap(() =>
+      withLatestFrom(this.store.select(selectBookLoaded)),
+      filter(([, loaded]) => !loaded),
+      exhaustMap(() =>
         this.bookService.getAll().pipe(
           map(books => BookActions.loadBooksSuccess({ books })),
           catchError(error => of(BookActions.loadBooksFailure({ error: error.message })))

@@ -5,6 +5,7 @@ import * as GenreActions from './genre.actions';
 
 export interface GenreState extends EntityState<Genre> {
   loading: boolean;
+  loaded: boolean;
   error: string | null;
 }
 
@@ -12,6 +13,7 @@ export const adapter: EntityAdapter<Genre> = createEntityAdapter<Genre>();
 
 export const initialState: GenreState = adapter.getInitialState({
   loading: false,
+  loaded: false,
   error: null
 });
 
@@ -20,7 +22,7 @@ export const genreReducer = createReducer(
 
   on(GenreActions.loadGenres, state => ({ ...state, loading: true, error: null })),
   on(GenreActions.loadGenresSuccess, (state, { genres }) =>
-    adapter.setAll(genres, { ...state, loading: false })),
+    adapter.setAll(genres, { ...state, loading: false, loaded: true })),
   on(GenreActions.loadGenresFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 

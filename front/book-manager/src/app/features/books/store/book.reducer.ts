@@ -5,6 +5,7 @@ import * as BookActions from './book.actions';
 
 export interface BookState extends EntityState<Book> {
   loading: boolean;
+  loaded: boolean;
   error: string | null;
 }
 
@@ -12,6 +13,7 @@ export const adapter: EntityAdapter<Book> = createEntityAdapter<Book>();
 
 export const initialState: BookState = adapter.getInitialState({
   loading: false,
+  loaded: false,
   error: null
 });
 
@@ -20,7 +22,7 @@ export const bookReducer = createReducer(
 
   on(BookActions.loadBooks, state => ({ ...state, loading: true, error: null })),
   on(BookActions.loadBooksSuccess, (state, { books }) =>
-    adapter.setAll(books, { ...state, loading: false })),
+    adapter.setAll(books, { ...state, loading: false, loaded: true })),
   on(BookActions.loadBooksFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 

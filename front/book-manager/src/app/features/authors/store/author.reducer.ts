@@ -5,6 +5,7 @@ import * as AuthorActions from './author.actions';
 
 export interface AuthorState extends EntityState<Author> {
   loading: boolean;
+  loaded: boolean;
   error: string | null;
 }
 
@@ -12,6 +13,7 @@ export const adapter: EntityAdapter<Author> = createEntityAdapter<Author>();
 
 export const initialState: AuthorState = adapter.getInitialState({
   loading: false,
+  loaded: false,
   error: null
 });
 
@@ -20,7 +22,7 @@ export const authorReducer = createReducer(
 
   on(AuthorActions.loadAuthors, state => ({ ...state, loading: true, error: null })),
   on(AuthorActions.loadAuthorsSuccess, (state, { authors }) =>
-    adapter.setAll(authors, { ...state, loading: false })),
+    adapter.setAll(authors, { ...state, loading: false, loaded: true })),
   on(AuthorActions.loadAuthorsFailure, (state, { error }) =>
     ({ ...state, loading: false, error })),
 

@@ -1,19 +1,24 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError } from 'rxjs/operators';
+import { map, mergeMap, exhaustMap, catchError, withLatestFrom, filter } from 'rxjs/operators';
 import { AuthorService } from '../../../core/services/author.service';
 import * as AuthorActions from './author.actions';
+import { selectAuthorLoaded } from './author.selectors';
 
 @Injectable()
 export class AuthorEffects {
   private actions$ = inject(Actions);
   private authorService = inject(AuthorService);
+  private store = inject(Store);
 
   loadAuthors$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthorActions.loadAuthors),
-      mergeMap(() =>
+      withLatestFrom(this.store.select(selectAuthorLoaded)),
+      filter(([, loaded]) => !loaded),
+      exhaustMap(() =>
         this.authorService.getAll().pipe(
           map(authors => AuthorActions.loadAuthorsSuccess({ authors })),
           catchError(error => of(AuthorActions.loadAuthorsFailure({ error: error.message })))

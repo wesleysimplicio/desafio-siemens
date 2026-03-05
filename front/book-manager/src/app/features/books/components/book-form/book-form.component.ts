@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { take, takeUntil, filter } from 'rxjs/operators';
 
 import { Genre } from '../../../../core/models/genre.model';
 import { Author } from '../../../../core/models/author.model';
